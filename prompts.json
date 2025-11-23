@@ -1,5 +1,5 @@
 {
-    "!gm": "priyanshurao369@gmail.com\n",
     "//ak": "good mrng \n",
-    ",,!": "PSR LAW OFFICES "
+    ",,!": "PSR LAW OFFICES ",
+    "~cleangw": "run ./gradlew.bat app:installDebug ( critical : dont use and extra params like --tail or -- anything it causes issue just simple ./gradlew.bat app:installDebug )"
 }
