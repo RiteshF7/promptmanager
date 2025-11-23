@@ -1,3 +1,6 @@
 customtkinter
 pynput
 packaging
+pystray
+Pillow
+psutil
