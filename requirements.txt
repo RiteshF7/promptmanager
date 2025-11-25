@@ -1,5 +1,8 @@
-customtkinter
+flask
 pynput
+google-generativeai
+python-dotenv
+customtkinter
 packaging
 pystray
 Pillow

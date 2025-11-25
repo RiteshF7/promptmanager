@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Prompt Manager</h1>
+                <button id="settings-btn" class="btn-icon" aria-label="Settings">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                        </path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
+            <p>Manage your text expansion shortcuts</p>
+        </header>
+
+        <section class="add-prompt">
+            <h2>Add New Prompt</h2>
+            <form id="add-form">
+                <div class="input-group">
+                    <label for="shortcut">Shortcut</label>
+                    <input type="text" id="shortcut" placeholder="e.g., !email" required>
+                </div>
+                <div class="input-group">
+                    <label for="text">Expansion Text</label>
+                    <textarea id="text" placeholder="Enter the full text here..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Add Prompt</button>
+            </form>
+        </section>
+
+        <section class="prompt-list">
+            <h2>Your Prompts</h2>
+            <div id="prompts-container">
+                <!-- Prompts will be loaded here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="api-key">Gemini API Key</label>
+                    <input type="password" id="api-key" placeholder="Enter your Gemini API Key">
+                    <p class="help-text">Required for prompt enhancement feature (//enhance)</p>
+                </div>
+                <button id="save-settings" class="btn-primary">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPrompts();
+            loadSettings();
+        });
+
+        // Settings Modal Logic
+        const modal = document.getElementById('settings-modal');
+        const settingsBtn = document.getElementById('settings-btn');
+        const closeBtn = document.querySelector('.close-modal');
+        const saveSettingsBtn = document.getElementById('save-settings');
+
+        settingsBtn.onclick = () => modal.style.display = "block";
+        closeBtn.onclick = () => modal.style.display = "none";
+        window.onclick = (event) => {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const data = await response.json();
+                if (data.api_key) {
+                    document.getElementById('api-key').value = data.api_key;
+                }
+            } catch (e) {
+                console.error("Failed to load settings");
+            }
+        }
+
+        saveSettingsBtn.onclick = async () => {
+            const apiKey = document.getElementById('api-key').value;
+            const response = await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ api_key: apiKey })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showToast(data.message);
+                modal.style.display = "none";
+            } else {
+                showToast(data.message, 'error');
+            }
+        };
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            // Trigger reflow
+            toast.offsetHeight;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('Copied to clipboard!');
+            } catch (err) {
+                showToast('Failed to copy', 'error');
+            }
+        }
+
+        document.getElementById('add-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const shortcut = document.getElementById('shortcut').value;
+            const text = document.getElementById('text').value;
+
+            const response = await fetch('/api/prompts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ shortcut, text })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById('add-form').reset();
+                loadPrompts();
+                showToast(data.message);
+            } else {
+                showToast(data.message, 'error');
+            }
+        });
+
+        async function loadPrompts() {
+            const response = await fetch('/api/prompts');
+            const prompts = await response.json();
+            const container = document.getElementById('prompts-container');
+            container.innerHTML = '';
+
+            if (Object.keys(prompts).length === 0) {
+                container.innerHTML = '<p class="empty-state">No prompts added yet.</p>';
+                return;
+            }
+
+            for (const [shortcut, text] of Object.entries(prompts)) {
+                const card = document.createElement('div');
+                card.className = 'prompt-card';
+                card.innerHTML = `
+                    <div class="prompt-info">
+                        <span class="shortcut-badge">${shortcut}</span>
+                        <p class="prompt-text">${text}</p>
+                    </div>
+                    <div class="prompt-actions">
+                        <button onclick="copyToClipboard('${text.replace(/'/g, "\\'")}')" class="btn-icon" aria-label="Copy text">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                        <button onclick="deletePrompt('${shortcut}')" class="btn-icon btn-delete" aria-label="Delete prompt">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        async function deletePrompt(shortcut) {
+            if (confirm(`Delete shortcut "${shortcut}"?`)) {
+                const response = await fetch(`/api/prompts/${encodeURIComponent(shortcut)}`, { method: 'DELETE' });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message);
+                    loadPrompts();
+                } else {
+                    showToast('Failed to delete', 'error');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

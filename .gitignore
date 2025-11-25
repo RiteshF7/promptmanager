@@ -18,3 +18,9 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# Secrets
+.env
+
+# Local artifacts
+verify_changes.py
+verify_enhancement.py
