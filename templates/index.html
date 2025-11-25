@@ -10,43 +10,74 @@
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <h1>Prompt Manager</h1>
-                <button id="settings-btn" class="btn-icon" aria-label="Settings">
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>PM</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#add-new" class="nav-item" onclick="scrollToSection('add-new')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    <span>Add New</span>
+                </a>
+                <a href="#existing" class="nav-item" onclick="scrollToSection('existing')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Existing</span>
+                </a>
+                <button id="sidebar-settings-btn" class="nav-item">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path
                             d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
                         </path>
                         <circle cx="12" cy="12" r="3"></circle>
                     </svg>
+                    <span>Settings</span>
                 </button>
-            </div>
-            <p>Manage your text expansion shortcuts</p>
-        </header>
+            </nav>
+        </aside>
 
-        <section class="add-prompt">
-            <h2>Add New Prompt</h2>
-            <form id="add-form">
-                <div class="input-group">
-                    <label for="shortcut">Shortcut</label>
-                    <input type="text" id="shortcut" placeholder="e.g., !email" required>
-                </div>
-                <div class="input-group">
-                    <label for="text">Expansion Text</label>
-                    <textarea id="text" placeholder="Enter the full text here..." required></textarea>
-                </div>
-                <button type="submit" class="btn-primary">Add Prompt</button>
-            </form>
-        </section>
+        <main class="main-content-wrapper">
+            <header>
+                <h1>Prompt Manager</h1>
+                <p>Manage your text expansion shortcuts</p>
+            </header>
 
-        <section class="prompt-list">
-            <h2>Your Prompts</h2>
-            <div id="prompts-container">
-                <!-- Prompts will be loaded here -->
+            <div class="content-grid">
+                <div id="add-new" class="section-column">
+                    <section class="add-prompt">
+                        <h2>Add New</h2>
+                        <form id="add-form">
+                            <div class="input-group">
+                                <label for="shortcut">Shortcut</label>
+                                <input type="text" id="shortcut" placeholder="e.g., !email" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="text">Expansion Text</label>
+                                <textarea id="text" placeholder="Enter the full text here..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Add Prompt</button>
+                        </form>
+                    </section>
+                </div>
+
+                <div id="existing" class="section-column">
+                    <section class="prompt-list">
+                        <h2>Existing</h2>
+                        <div id="prompts-container">
+                            <!-- Prompts will be loaded here -->
+                        </div>
+                    </section>
+                </div>
             </div>
-        </section>
+        </main>
     </div>
 
     <!-- Settings Modal -->
@@ -75,14 +106,31 @@
             loadSettings();
         });
 
+        // Navigation Logic
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                // Update active state
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                event.currentTarget.classList.add('active');
+            }
+        }
+
         // Settings Modal Logic
         const modal = document.getElementById('settings-modal');
-        const settingsBtn = document.getElementById('settings-btn');
+        const settingsBtn = document.getElementById('sidebar-settings-btn');
         const closeBtn = document.querySelector('.close-modal');
         const saveSettingsBtn = document.getElementById('save-settings');
 
-        settingsBtn.onclick = () => modal.style.display = "block";
-        closeBtn.onclick = () => modal.style.display = "none";
+        if (settingsBtn) {
+            settingsBtn.onclick = () => modal.style.display = "block";
+        }
+
+        if (closeBtn) {
+            closeBtn.onclick = () => modal.style.display = "none";
+        }
+
         window.onclick = (event) => {
             if (event.target == modal) {
                 modal.style.display = "none";
