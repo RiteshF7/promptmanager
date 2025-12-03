@@ -18,6 +18,10 @@ listener.start()
 def index():
     return render_template('index.html')
 
+@app.route('/landing')
+def landing():
+    return render_template('landing.html')
+
 @app.route('/api/settings', methods=['GET'])
 def get_settings():
     return jsonify({"api_key": os.getenv("GEMINI_API_KEY", "")})

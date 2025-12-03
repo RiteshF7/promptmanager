@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prompt Manager</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2554/2554282.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 
@@ -53,17 +56,29 @@
             <div class="content-grid">
                 <div id="add-new" class="section-column">
                     <section class="add-prompt">
-                        <h2>Add New</h2>
+                        <div class="section-header">
+                            <h2>Add New Prompt</h2>
+                            <p>Create a new shortcut to expand into full text.</p>
+                        </div>
                         <form id="add-form">
                             <div class="input-group">
                                 <label for="shortcut">Shortcut</label>
-                                <input type="text" id="shortcut" placeholder="e.g., !email" required>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">#</span>
+                                    <input type="text" id="shortcut" placeholder="e.g., !email" required>
+                                </div>
                             </div>
                             <div class="input-group">
                                 <label for="text">Expansion Text</label>
                                 <textarea id="text" placeholder="Enter the full text here..." required></textarea>
                             </div>
-                            <button type="submit" class="btn-primary">Add Prompt</button>
+                            <button type="submit" class="btn-primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 5v14M5 12h14"></path>
+                                </svg>
+                                Add Prompt
+                            </button>
                         </form>
                     </section>
                 </div>
@@ -104,6 +119,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadPrompts();
             loadSettings();
+
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(registration => console.log('ServiceWorker registration successful'))
+                    .catch(err => console.log('ServiceWorker registration failed: ', err));
+            }
         });
 
         // Navigation Logic

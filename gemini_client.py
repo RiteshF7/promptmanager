@@ -30,6 +30,7 @@ class GeminiClient:
             2. Add necessary context or structure if missing.
             3. Make it concise but comprehensive.
             4. Return ONLY the enhanced prompt text, no explanations or quotes.
+            5. Do not use line breaks or newlines; keep it as a single paragraph.
             """
             response = self.model.generate_content(prompt)
             return response.text.strip()

@@ -323,14 +323,69 @@ textarea {
 .toast-error {
     border-left-color: var(--danger-color);
 }
+
+/* Section Styles */
 /* Section Styles */
 .add-prompt {
     background: var(--card-bg);
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     height: fit-content;
-    border-top: 4px solid var(--primary-color);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s;
+}
+
+.add-prompt:hover {
+    transform: translateY(-2px);
+}
+
+.section-header {
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.section-header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.input-wrapper input {
+    padding-left: 2.5rem;
+}
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    padding: 0.875rem;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 8px -1px rgba(99, 102, 241, 0.5);
+    transform: translateY(-1px);
 }
 
 .prompt-list {
@@ -343,4 +398,3 @@ textarea {
     margin-left: 0.5rem;
     margin-bottom: 1rem;
 }
-

@@ -73,8 +73,8 @@ class KeyboardListener:
         # Delete the original text
         self.delete_text(text_to_enhance)
         
-        # Type the enhanced text
-        self.controller.type(enhanced_text)
+        # Type the enhanced text, replacing newlines with spaces to prevent auto-sending
+        self.controller.type(enhanced_text.replace('\n', ' '))
         
         self.buffer = "" # Reset buffer
 
@@ -86,7 +86,8 @@ class KeyboardListener:
 
     def replace_text(self, shortcut, replacement):
         self.delete_text(shortcut)
-        self.controller.type(replacement)
+        # Strip trailing newlines/whitespace to prevent auto-enter
+        self.controller.type(replacement.rstrip())
 
     def start(self):
         self.running = True
