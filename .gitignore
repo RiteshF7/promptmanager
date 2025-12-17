@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
 
 # Virtual environments
 venv/
@@ -21,6 +23,6 @@ Thumbs.db
 # Secrets
 .env
 
-# Local artifacts
+# Test/Verification scripts (local development only)
 verify_changes.py
 verify_enhancement.py
