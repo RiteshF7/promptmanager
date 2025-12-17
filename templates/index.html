@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prompt Manager</title>
+    <title>Prompt Manager - Home</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#6366f1">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2554/2554282.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -19,13 +19,13 @@
                 <h2>PM</h2>
             </div>
             <nav class="sidebar-nav">
-                <a href="#add-new" class="nav-item" onclick="scrollToSection('add-new')">
+                <a href="/" class="nav-item active">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"></path>
                     </svg>
                     <span>Add New</span>
                 </a>
-                <a href="#existing" class="nav-item" onclick="scrollToSection('existing')">
+                <a href="/existing" class="nav-item">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                         <polyline points="14 2 14 8 20 8"></polyline>
@@ -45,51 +45,23 @@
                     <span>Settings</span>
                 </button>
             </nav>
+            <div id="recent-prompts" class="recent-prompts-section">
+                <h3 class="recent-prompts-title">Recently Used</h3>
+                <div id="recent-prompts-list" class="recent-prompts-list">
+                    <!-- Recently used prompts will be loaded here -->
+                </div>
+            </div>
         </aside>
 
         <main class="main-content-wrapper">
             <header>
                 <h1>Prompt Manager</h1>
-                <p>Manage your text expansion shortcuts</p>
+                <p>Your recently used shortcuts</p>
             </header>
 
-            <div class="content-grid">
-                <div id="add-new" class="section-column">
-                    <section class="add-prompt">
-                        <div class="section-header">
-                            <h2>Add New Prompt</h2>
-                            <p>Create a new shortcut to expand into full text.</p>
-                        </div>
-                        <form id="add-form">
-                            <div class="input-group">
-                                <label for="shortcut">Shortcut</label>
-                                <div class="input-wrapper">
-                                    <span class="input-icon">#</span>
-                                    <input type="text" id="shortcut" placeholder="e.g., !email" required>
-                                </div>
-                            </div>
-                            <div class="input-group">
-                                <label for="text">Expansion Text</label>
-                                <textarea id="text" placeholder="Enter the full text here..." required></textarea>
-                            </div>
-                            <button type="submit" class="btn-primary">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M12 5v14M5 12h14"></path>
-                                </svg>
-                                Add Prompt
-                            </button>
-                        </form>
-                    </section>
-                </div>
-
-                <div id="existing" class="section-column">
-                    <section class="prompt-list">
-                        <h2>Existing</h2>
-                        <div id="prompts-container">
-                            <!-- Prompts will be loaded here -->
-                        </div>
-                    </section>
+            <div class="home-content">
+                <div id="recent-prompts-home" class="recent-prompts-home">
+                    <!-- Recently used prompts will be displayed here -->
                 </div>
             </div>
         </main>
@@ -115,174 +87,155 @@
 
     <div id="toast-container"></div>
 
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPrompts();
+        const RECENT_PROMPTS_KEY = 'promptManager_recentUsed';
+        const MAX_RECENT = 10;
+
+        function getRecentPrompts() {
+            const stored = localStorage.getItem(RECENT_PROMPTS_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function addToRecent(shortcut) {
+            let recent = getRecentPrompts();
+            // Remove if already exists
+            recent = recent.filter(s => s !== shortcut);
+            // Add to beginning
+            recent.unshift(shortcut);
+            // Keep only last MAX_RECENT
+            recent = recent.slice(0, MAX_RECENT);
+            localStorage.setItem(RECENT_PROMPTS_KEY, JSON.stringify(recent));
+            loadRecentPrompts();
+        }
+
+        function loadRecentPrompts() {
+            const recent = getRecentPrompts();
+            const prompts = getStoredPrompts();
+            
+            // Load in sidebar
+            const sidebarList = document.getElementById('recent-prompts-list');
+            sidebarList.innerHTML = '';
+            
+            if (recent.length === 0) {
+                sidebarList.innerHTML = '<p style="color: var(--text-tertiary); font-size: 0.75rem; padding: 0.5rem;">No recent prompts</p>';
+            } else {
+                recent.forEach(shortcut => {
+                    if (shortcut in prompts) {
+                        const promptData = prompts[shortcut];
+                        const text = typeof promptData === 'string' ? promptData : (promptData.text || '');
+                        const item = document.createElement('div');
+                        item.className = 'recent-prompt-item';
+                        item.innerHTML = `
+                            <span class="recent-shortcut">${shortcut}</span>
+                            <span class="recent-text">${text.substring(0, 30)}${text.length > 30 ? '...' : ''}</span>
+                        `;
+                        sidebarList.appendChild(item);
+                    }
+                });
+            }
+
+            // Load in home content
+            const homeList = document.getElementById('recent-prompts-home');
+            homeList.innerHTML = '';
+            
+            if (recent.length === 0) {
+                homeList.innerHTML = '<p class="empty-state">No recently used prompts. Start using shortcuts to see them here!</p>';
+            } else {
+                recent.forEach(shortcut => {
+                    if (shortcut in prompts) {
+                        const promptData = prompts[shortcut];
+                        let text, prepend = '', postpend = '';
+                        if (typeof promptData === 'string') {
+                            text = promptData;
+                        } else {
+                            text = promptData.text || '';
+                            prepend = promptData.prepend || '';
+                            postpend = promptData.postpend || '';
+                        }
+                        const fullExpansion = prepend + text + postpend;
+                        
+                        const card = document.createElement('div');
+                        card.className = 'prompt-card';
+                        const htmlShortcut = shortcut.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const htmlText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        
+                        card.innerHTML = `
+                            <div class="prompt-info">
+                                <span class="shortcut-badge">${htmlShortcut}</span>
+                                <p class="prompt-text">${htmlText}</p>
+                            </div>
+                            <div class="prompt-actions">
+                                <button class="btn-icon btn-copy" data-text="${fullExpansion.replace(/"/g, '&quot;')}" data-shortcut="${shortcut.replace(/"/g, '&quot;')}" aria-label="Copy text">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        `;
+                        homeList.appendChild(card);
+                    }
+                });
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializePrompts();
             loadSettings();
-
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/static/sw.js')
-                    .then(registration => console.log('ServiceWorker registration successful'))
-                    .catch(err => console.log('ServiceWorker registration failed: ', err));
-            }
-        });
-
-        // Navigation Logic
-        function scrollToSection(id) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-                // Update active state
-                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                event.currentTarget.classList.add('active');
-            }
-        }
-
-        // Settings Modal Logic
-        const modal = document.getElementById('settings-modal');
-        const settingsBtn = document.getElementById('sidebar-settings-btn');
-        const closeBtn = document.querySelector('.close-modal');
-        const saveSettingsBtn = document.getElementById('save-settings');
-
-        if (settingsBtn) {
-            settingsBtn.onclick = () => modal.style.display = "block";
-        }
-
-        if (closeBtn) {
-            closeBtn.onclick = () => modal.style.display = "none";
-        }
-
-        window.onclick = (event) => {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        async function loadSettings() {
-            try {
-                const response = await fetch('/api/settings');
-                const data = await response.json();
-                if (data.api_key) {
-                    document.getElementById('api-key').value = data.api_key;
+            loadRecentPrompts();
+            
+            // Copy button handler
+            document.getElementById('recent-prompts-home').addEventListener('click', (e) => {
+                if (e.target.closest('.btn-copy')) {
+                    const btn = e.target.closest('.btn-copy');
+                    const text = btn.getAttribute('data-text');
+                    const shortcut = btn.getAttribute('data-shortcut');
+                    if (text) {
+                        copyToClipboard(text, shortcut);
+                        if (shortcut) {
+                            addToRecent(shortcut);
+                            loadRecentPrompts();
+                        }
+                    }
                 }
-            } catch (e) {
-                console.error("Failed to load settings");
-            }
-        }
-
-        saveSettingsBtn.onclick = async () => {
-            const apiKey = document.getElementById('api-key').value;
-            const response = await fetch('/api/settings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ api_key: apiKey })
-            });
-            const data = await response.json();
-            if (response.ok) {
-                showToast(data.message);
-                modal.style.display = "none";
-            } else {
-                showToast(data.message, 'error');
-            }
-        };
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = message;
-            container.appendChild(toast);
-
-            // Trigger reflow
-            toast.offsetHeight;
-            toast.classList.add('show');
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        async function copyToClipboard(text) {
-            try {
-                await navigator.clipboard.writeText(text);
-                showToast('Copied to clipboard!');
-            } catch (err) {
-                showToast('Failed to copy', 'error');
-            }
-        }
-
-        document.getElementById('add-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const shortcut = document.getElementById('shortcut').value;
-            const text = document.getElementById('text').value;
-
-            const response = await fetch('/api/prompts', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ shortcut, text })
             });
 
-            const data = await response.json();
+            // Settings modal
+            const modal = document.getElementById('settings-modal');
+            const settingsBtn = document.getElementById('sidebar-settings-btn');
+            const closeBtn = document.querySelector('.close-modal');
+            const saveSettingsBtn = document.getElementById('save-settings');
 
-            if (response.ok) {
-                document.getElementById('add-form').reset();
-                loadPrompts();
-                showToast(data.message);
-            } else {
-                showToast(data.message, 'error');
+            if (settingsBtn) {
+                settingsBtn.onclick = () => modal.style.display = "block";
             }
-        });
-
-        async function loadPrompts() {
-            const response = await fetch('/api/prompts');
-            const prompts = await response.json();
-            const container = document.getElementById('prompts-container');
-            container.innerHTML = '';
-
-            if (Object.keys(prompts).length === 0) {
-                container.innerHTML = '<p class="empty-state">No prompts added yet.</p>';
-                return;
+            if (closeBtn) {
+                closeBtn.onclick = () => modal.style.display = "none";
+            }
+            window.onclick = (event) => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
             }
 
-            for (const [shortcut, text] of Object.entries(prompts)) {
-                const card = document.createElement('div');
-                card.className = 'prompt-card';
-                card.innerHTML = `
-                    <div class="prompt-info">
-                        <span class="shortcut-badge">${shortcut}</span>
-                        <p class="prompt-text">${text}</p>
-                    </div>
-                    <div class="prompt-actions">
-                        <button onclick="copyToClipboard('${text.replace(/'/g, "\\'")}')" class="btn-icon" aria-label="Copy text">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </button>
-                        <button onclick="deletePrompt('${shortcut}')" class="btn-icon btn-delete" aria-label="Delete prompt">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
-                            </svg>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            }
-        }
-
-        async function deletePrompt(shortcut) {
-            if (confirm(`Delete shortcut "${shortcut}"?`)) {
-                const response = await fetch(`/api/prompts/${encodeURIComponent(shortcut)}`, { method: 'DELETE' });
+            saveSettingsBtn.onclick = async () => {
+                const apiKey = document.getElementById('api-key').value;
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ api_key: apiKey })
+                });
                 const data = await response.json();
                 if (response.ok) {
                     showToast(data.message);
-                    loadPrompts();
+                    modal.style.display = "none";
                 } else {
-                    showToast('Failed to delete', 'error');
+                    showToast(data.message, 'error');
                 }
-            }
-        }
+            };
+        });
     </script>
 </body>
 

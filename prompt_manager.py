@@ -32,10 +32,16 @@ class PromptManager:
         self.save_prompts()
 
     def delete_prompt(self, shortcut):
+        deleted = False
         with self.lock:
             if shortcut in self.prompts:
                 del self.prompts[shortcut]
-        self.save_prompts()
+                deleted = True
+        if deleted:
+            self.save_prompts()
+            # Reload to ensure file was written correctly
+            self.load_prompts()
+        return deleted
 
     def get_prompts(self):
         with self.lock:

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Prompt - Prompt Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2554/2554282.png">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>PM</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    <span>Add New</span>
+                </a>
+                <a href="/existing" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Existing</span>
+                </a>
+                <button id="sidebar-settings-btn" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                        </path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>Settings</span>
+                </button>
+            </nav>
+            <div id="recent-prompts" class="recent-prompts-section">
+                <h3 class="recent-prompts-title">Recently Used</h3>
+                <div id="recent-prompts-list" class="recent-prompts-list">
+                    <!-- Recently used prompts will be loaded here -->
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content-wrapper add-page-wrapper">
+            <header>
+                <h1>Add New Prompt</h1>
+                <p>Create a new shortcut to expand into full text</p>
+            </header>
+
+            <div class="add-form-container">
+                <section class="add-prompt-full">
+                    <form id="add-form">
+                        <div class="input-group">
+                            <label for="shortcut">Shortcut</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">#</span>
+                                <input type="text" id="shortcut" placeholder="e.g., !email" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="text">Expansion Text</label>
+                            <textarea id="text" placeholder="Enter the full text here..." required></textarea>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="input-group">
+                                <label for="prepend">Prepend Text (Optional)</label>
+                                <input type="text" id="prepend" placeholder="e.g., Hello ">
+                                <p class="help-text">Text to add before expansion</p>
+                                <div class="quick-chars" data-target="prepend">
+                                    <span class="quick-chars-label">Quick select:</span>
+                                    <div class="quick-chars-buttons">
+                                        <button type="button" class="quick-char-btn" data-char="">Clear</button>
+                                        <button type="button" class="quick-char-btn" data-char="!">!</button>
+                                        <button type="button" class="quick-char-btn" data-char="!!">!!</button>
+                                        <button type="button" class="quick-char-btn" data-char="@">@</button>
+                                        <button type="button" class="quick-char-btn" data-char="@@">@@</button>
+                                        <button type="button" class="quick-char-btn" data-char="#">#</button>
+                                        <button type="button" class="quick-char-btn" data-char="##">##</button>
+                                        <button type="button" class="quick-char-btn" data-char="$">$</button>
+                                        <button type="button" class="quick-char-btn" data-char="%">%</button>
+                                        <button type="button" class="quick-char-btn" data-char="&">&</button>
+                                        <button type="button" class="quick-char-btn" data-char="*">*</button>
+                                        <button type="button" class="quick-char-btn" data-char="+">+</button>
+                                        <button type="button" class="quick-char-btn" data-char="=">=</button>
+                                        <button type="button" class="quick-char-btn" data-char="?">?</button>
+                                        <button type="button" class="quick-char-btn" data-char=":">:</button>
+                                        <button type="button" class="quick-char-btn" data-char=";">;</button>
+                                        <button type="button" class="quick-char-btn" data-char=".">.</button>
+                                        <button type="button" class="quick-char-btn" data-char=",">,</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label for="postpend">Postpend Text (Optional)</label>
+                                <input type="text" id="postpend" placeholder="e.g., !">
+                                <p class="help-text">Text to add after expansion</p>
+                                <div class="quick-chars" data-target="postpend">
+                                    <span class="quick-chars-label">Quick select:</span>
+                                    <div class="quick-chars-buttons">
+                                        <button type="button" class="quick-char-btn" data-char="">Clear</button>
+                                        <button type="button" class="quick-char-btn" data-char="!">!</button>
+                                        <button type="button" class="quick-char-btn" data-char="!!">!!</button>
+                                        <button type="button" class="quick-char-btn" data-char="@">@</button>
+                                        <button type="button" class="quick-char-btn" data-char="@@">@@</button>
+                                        <button type="button" class="quick-char-btn" data-char="#">#</button>
+                                        <button type="button" class="quick-char-btn" data-char="##">##</button>
+                                        <button type="button" class="quick-char-btn" data-char="$">$</button>
+                                        <button type="button" class="quick-char-btn" data-char="%">%</button>
+                                        <button type="button" class="quick-char-btn" data-char="&">&</button>
+                                        <button type="button" class="quick-char-btn" data-char="*">*</button>
+                                        <button type="button" class="quick-char-btn" data-char="+">+</button>
+                                        <button type="button" class="quick-char-btn" data-char="=">=</button>
+                                        <button type="button" class="quick-char-btn" data-char="?">?</button>
+                                        <button type="button" class="quick-char-btn" data-char=":">:</button>
+                                        <button type="button" class="quick-char-btn" data-char=";">;</button>
+                                        <button type="button" class="quick-char-btn" data-char=".">.</button>
+                                        <button type="button" class="quick-char-btn" data-char=",">,</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"></path>
+                            </svg>
+                            Add Prompt
+                        </button>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="api-key">Gemini API Key</label>
+                    <input type="password" id="api-key" placeholder="Enter your Gemini API Key">
+                    <p class="help-text">Required for prompt enhancement feature (//enhance)</p>
+                </div>
+                <button id="save-settings" class="btn-primary">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
+    <script>
+        function setupQuickCharButtons() {
+            document.querySelectorAll('.quick-char-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const char = btn.getAttribute('data-char');
+                    const quickCharsContainer = btn.closest('.quick-chars');
+                    const targetFieldId = quickCharsContainer.getAttribute('data-target');
+                    const targetInput = document.getElementById(targetFieldId);
+                    
+                    if (targetInput) {
+                        targetInput.value = char;
+                        targetInput.focus();
+                        targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+            });
+        }
+
+        function loadRecentPrompts() {
+            const recent = getRecentPrompts();
+            const prompts = getStoredPrompts();
+            const sidebarList = document.getElementById('recent-prompts-list');
+            sidebarList.innerHTML = '';
+            
+            if (recent.length === 0) {
+                sidebarList.innerHTML = '<p style="color: var(--text-tertiary); font-size: 0.75rem; padding: 0.5rem;">No recent prompts</p>';
+            } else {
+                recent.forEach(shortcut => {
+                    if (shortcut in prompts) {
+                        const promptData = prompts[shortcut];
+                        const text = typeof promptData === 'string' ? promptData : (promptData.text || '');
+                        const item = document.createElement('div');
+                        item.className = 'recent-prompt-item';
+                        item.innerHTML = `
+                            <span class="recent-shortcut">${shortcut}</span>
+                            <span class="recent-text">${text.substring(0, 30)}${text.length > 30 ? '...' : ''}</span>
+                        `;
+                        sidebarList.appendChild(item);
+                    }
+                });
+            }
+        }
+
+        document.getElementById('add-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const shortcut = document.getElementById('shortcut').value.trim();
+            const text = document.getElementById('text').value.trim();
+            const prepend = document.getElementById('prepend').value.trim();
+            const postpend = document.getElementById('postpend').value.trim();
+
+            if (!shortcut || !text) {
+                showToast('Please fill in shortcut and expansion text', 'error');
+                return;
+            }
+
+            if (shortcut.includes(' ')) {
+                showToast('Shortcuts cannot contain spaces', 'error');
+                return;
+            }
+
+            const prompts = getStoredPrompts();
+            prompts[shortcut] = {
+                text: text,
+                prepend: prepend || '',
+                postpend: postpend || ''
+            };
+            savePrompts(prompts);
+
+            document.getElementById('add-form').reset();
+            showToast('Prompt added successfully!');
+            setTimeout(() => {
+                window.location.href = '/existing';
+            }, 1000);
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializePrompts();
+            loadSettings();
+            setupQuickCharButtons();
+            loadRecentPrompts();
+
+            // Settings modal
+            const modal = document.getElementById('settings-modal');
+            const settingsBtn = document.getElementById('sidebar-settings-btn');
+            const closeBtn = document.querySelector('.close-modal');
+            const saveSettingsBtn = document.getElementById('save-settings');
+
+            if (settingsBtn) {
+                settingsBtn.onclick = () => modal.style.display = "block";
+            }
+            if (closeBtn) {
+                closeBtn.onclick = () => modal.style.display = "none";
+            }
+            window.onclick = (event) => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            saveSettingsBtn.onclick = async () => {
+                const apiKey = document.getElementById('api-key').value;
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ api_key: apiKey })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message);
+                    modal.style.display = "none";
+                } else {
+                    showToast(data.message, 'error');
+                }
+            };
+        });
+    </script>
+</body>
+
+</html>
+

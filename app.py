@@ -16,7 +16,11 @@ listener.start()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('add.html')
+
+@app.route('/existing')
+def existing_prompts_page():
+    return render_template('existing.html')
 
 @app.route('/landing')
 def landing():
@@ -42,27 +46,50 @@ def save_settings():
         return jsonify({"status": "success", "message": "Settings saved"})
     return jsonify({"status": "error", "message": "Invalid API Key"}), 400
 
-@app.route('/api/prompts', methods=['GET'])
-def get_prompts():
+@app.route('/api/prompts/defaults', methods=['GET'])
+def get_default_prompts():
+    """Get default prompts from prompts.json file"""
     return jsonify(prompt_manager.get_prompts())
 
-@app.route('/api/prompts', methods=['POST'])
-def add_prompt():
-    data = request.json
-    shortcut = data.get('shortcut')
-    text = data.get('text')
-    if shortcut and text:
-        try:
-            prompt_manager.add_prompt(shortcut, text)
-            return jsonify({"status": "success", "message": "Prompt added"}), 201
-        except ValueError as e:
-            return jsonify({"status": "error", "message": str(e)}), 400
-    return jsonify({"status": "error", "message": "Invalid data"}), 400
+@app.route('/api/prompts/sync', methods=['POST'])
+def sync_prompts():
+    """Sync prompts from browser to server for keyboard listener"""
+    try:
+        if not request.json:
+            return jsonify({"status": "error", "message": "No data provided"}), 400
+        
+        prompts = request.json.get('prompts', {})
+        if not isinstance(prompts, dict):
+            return jsonify({"status": "error", "message": "Invalid prompts format"}), 400
+        
+        # Update the prompt manager with synced prompts
+        # Clear existing and add all synced prompts
+        with prompt_manager.lock:
+            prompt_manager.prompts = prompts.copy()
+        prompt_manager.save_prompts()
+        
+        return jsonify({"status": "success", "message": "Prompts synced successfully"})
+    except Exception as e:
+        import traceback
+        print(f"Error syncing prompts: {traceback.format_exc()}")
+        return jsonify({"status": "error", "message": f"Failed to sync prompts: {str(e)}"}), 500
 
-@app.route('/api/prompts/<path:shortcut>', methods=['DELETE'])
-def delete_prompt(shortcut):
-    prompt_manager.delete_prompt(shortcut)
-    return jsonify({"status": "success", "message": "Prompt deleted"})
+@app.route('/api/prompts/track-usage', methods=['POST'])
+def track_usage():
+    """Track prompt usage for recently used feature"""
+    try:
+        if not request.json:
+            return jsonify({"status": "error", "message": "No data provided"}), 400
+        
+        shortcut = request.json.get('shortcut')
+        if not shortcut:
+            return jsonify({"status": "error", "message": "Shortcut not provided"}), 400
+        
+        # This endpoint is called by the keyboard listener when a shortcut is used
+        # The frontend will handle storing it in localStorage
+        return jsonify({"status": "success", "message": "Usage tracked"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Failed to track usage: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, use_reloader=False) 

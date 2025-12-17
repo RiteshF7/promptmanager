@@ -1,8 +1,7 @@
 {
-    "//ak": "good mrng \n",
-    "/git": "git add and git push with a relevant commit message",
-    "/pm": "http://127.0.0.1:5000/",
-    "/yt": "https://www.youtube.com/watch?v=2ugqnBbYeUw",
-    "/st": "https://study-tracker-psi.vercel.app/",
-    "/dt": "dt-seven-iota.vercel.app"
+    "rundroidrun": {
+        "text": "@installdroidrun.sh  and then push it to github then access termux via adb cli and do a git pull and run the updated script dont stop until droidrun is installed via this script  critical: the installation must be done through this script for fututr automation purpose. in case of error explain it to me wait for my suggestion for fix then make the fix in code in cursor and repeat the process",
+        "prepend": "",
+        "postpend": "!!"
+    }
 }

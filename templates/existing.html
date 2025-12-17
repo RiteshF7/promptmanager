@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Existing Prompts - Prompt Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2554/2554282.png">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>PM</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    <span>Add New</span>
+                </a>
+                <a href="/existing" class="nav-item active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Existing</span>
+                </a>
+                <button id="sidebar-settings-btn" class="nav-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                        </path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>Settings</span>
+                </button>
+            </nav>
+            <div id="recent-prompts" class="recent-prompts-section">
+                <h3 class="recent-prompts-title">Recently Used</h3>
+                <div id="recent-prompts-list" class="recent-prompts-list">
+                    <!-- Recently used prompts will be loaded here -->
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content-wrapper">
+            <header>
+                <h1>Existing Prompts</h1>
+                <p>Manage your text expansion shortcuts</p>
+            </header>
+
+            <div class="existing-content">
+                <section class="prompt-list">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-shrink: 0;">
+                        <h2 style="margin: 0;">All Prompts</h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button id="export-btn" class="btn-secondary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 0.25rem;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Export
+                            </button>
+                            <button id="import-btn" class="btn-secondary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 0.25rem;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                Import
+                            </button>
+                            <input type="file" id="import-file" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+                    <div id="prompts-container">
+                        <!-- Prompts will be loaded here -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="api-key">Gemini API Key</label>
+                    <input type="password" id="api-key" placeholder="Enter your Gemini API Key">
+                    <p class="help-text">Required for prompt enhancement feature (//enhance)</p>
+                </div>
+                <button id="save-settings" class="btn-primary">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
+    <script>
+        function exportPrompts() {
+            const prompts = getStoredPrompts();
+            const dataStr = JSON.stringify(prompts, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'prompts-export.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            showToast('Prompts exported successfully!');
+        }
+
+        function importPrompts(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (typeof imported !== 'object' || Array.isArray(imported)) {
+                        throw new Error('Invalid format');
+                    }
+                    const normalizedImported = normalizePromptFormat(imported);
+                    const currentPrompts = getStoredPrompts();
+                    const normalizedCurrent = normalizePromptFormat(currentPrompts);
+                    const mergedPrompts = { ...normalizedCurrent, ...normalizedImported };
+                    savePrompts(mergedPrompts);
+                    loadPrompts();
+                    showToast('Prompts imported successfully!');
+                } catch (error) {
+                    showToast('Failed to import prompts: Invalid file format', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        async function loadPrompts() {
+            const prompts = getStoredPrompts();
+            const container = document.getElementById('prompts-container');
+            container.innerHTML = '';
+
+            if (Object.keys(prompts).length === 0) {
+                container.innerHTML = '<p class="empty-state">No prompts added yet.</p>';
+                return;
+            }
+
+            for (const [shortcut, promptData] of Object.entries(prompts)) {
+                let text, prepend = '', postpend = '';
+                if (typeof promptData === 'string') {
+                    text = promptData;
+                    const updatedPrompts = getStoredPrompts();
+                    updatedPrompts[shortcut] = { text: text, prepend: '', postpend: '' };
+                    savePrompts(updatedPrompts);
+                } else {
+                    text = promptData.text || '';
+                    prepend = promptData.prepend || '';
+                    postpend = promptData.postpend || '';
+                }
+
+                const fullExpansion = prepend + text + postpend;
+                
+                const card = document.createElement('div');
+                card.className = 'prompt-card';
+                
+                const htmlShortcut = shortcut.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                const htmlText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                const htmlPrepend = prepend.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                const htmlPostpend = postpend.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                const htmlFullExpansion = fullExpansion.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                
+                let prependPostpendInfo = '';
+                if (prepend || postpend) {
+                    prependPostpendInfo = `
+                        <div class="prepend-postpend-info">
+                            ${prepend ? `<div><span>Prepend:</span> "${htmlPrepend}"</div>` : ''}
+                            ${postpend ? `<div><span>Postpend:</span> "${htmlPostpend}"</div>` : ''}
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = `
+                    <div class="prompt-info">
+                        <span class="shortcut-badge">${htmlShortcut}</span>
+                        <p class="prompt-text">${htmlText}</p>
+                        ${prependPostpendInfo}
+                        ${(prepend || postpend) ? `<div class="prompt-preview">"${htmlFullExpansion}"</div>` : ''}
+                    </div>
+                    <div class="prompt-actions">
+                        <button class="btn-icon btn-copy" data-text="${fullExpansion.replace(/"/g, '&quot;')}" data-shortcut="${shortcut.replace(/"/g, '&quot;')}" aria-label="Copy text">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                        <button class="btn-icon btn-delete" data-shortcut="${shortcut.replace(/"/g, '&quot;')}" aria-label="Delete prompt">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        async function deletePrompt(shortcut) {
+            const prompts = getStoredPrompts();
+            if (shortcut in prompts) {
+                delete prompts[shortcut];
+                savePrompts(prompts);
+                loadPrompts();
+                showToast('Prompt deleted successfully!');
+            } else {
+                showToast('Prompt not found', 'error');
+            }
+        }
+
+        function loadRecentPrompts() {
+            const recent = getRecentPrompts();
+            const prompts = getStoredPrompts();
+            const sidebarList = document.getElementById('recent-prompts-list');
+            sidebarList.innerHTML = '';
+            
+            if (recent.length === 0) {
+                sidebarList.innerHTML = '<p style="color: var(--text-tertiary); font-size: 0.75rem; padding: 0.5rem;">No recent prompts</p>';
+            } else {
+                recent.forEach(shortcut => {
+                    if (shortcut in prompts) {
+                        const promptData = prompts[shortcut];
+                        const text = typeof promptData === 'string' ? promptData : (promptData.text || '');
+                        const item = document.createElement('div');
+                        item.className = 'recent-prompt-item';
+                        item.innerHTML = `
+                            <span class="recent-shortcut">${shortcut}</span>
+                            <span class="recent-text">${text.substring(0, 30)}${text.length > 30 ? '...' : ''}</span>
+                        `;
+                        sidebarList.appendChild(item);
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializePrompts();
+            loadSettings();
+            loadPrompts();
+            loadRecentPrompts();
+            
+            document.getElementById('export-btn').addEventListener('click', exportPrompts);
+            document.getElementById('import-btn').addEventListener('click', () => {
+                document.getElementById('import-file').click();
+            });
+            document.getElementById('import-file').addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    importPrompts(e.target.files[0]);
+                    e.target.value = '';
+                }
+            });
+
+            const container = document.getElementById('prompts-container');
+            container.addEventListener('click', (e) => {
+                if (e.target.closest('.btn-delete')) {
+                    const shortcut = e.target.closest('.btn-delete').getAttribute('data-shortcut');
+                    if (shortcut) {
+                        deletePrompt(shortcut);
+                    }
+                } else if (e.target.closest('.btn-copy')) {
+                    const btn = e.target.closest('.btn-copy');
+                    const text = btn.getAttribute('data-text');
+                    const shortcut = btn.getAttribute('data-shortcut');
+                    if (text) {
+                        copyToClipboard(text, shortcut);
+                        if (shortcut) {
+                            addToRecent(shortcut);
+                            loadRecentPrompts();
+                        }
+                    }
+                }
+            });
+
+            // Settings modal
+            const modal = document.getElementById('settings-modal');
+            const settingsBtn = document.getElementById('sidebar-settings-btn');
+            const closeBtn = document.querySelector('.close-modal');
+            const saveSettingsBtn = document.getElementById('save-settings');
+
+            if (settingsBtn) {
+                settingsBtn.onclick = () => modal.style.display = "block";
+            }
+            if (closeBtn) {
+                closeBtn.onclick = () => modal.style.display = "none";
+            }
+            window.onclick = (event) => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            saveSettingsBtn.onclick = async () => {
+                const apiKey = document.getElementById('api-key').value;
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ api_key: apiKey })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message);
+                    modal.style.display = "none";
+                } else {
+                    showToast(data.message, 'error');
+                }
+            };
+        });
+    </script>
+</body>
+
+</html>
+

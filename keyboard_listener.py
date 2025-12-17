@@ -2,6 +2,13 @@ from pynput import keyboard
 from pynput.keyboard import Key, Controller
 import time
 import threading
+import json
+try:
+    from urllib.request import urlopen, Request
+    from urllib.error import URLError
+    HAS_URLLIB = True
+except ImportError:
+    HAS_URLLIB = False
 
 class KeyboardListener:
     def __init__(self, prompt_manager, gemini_client=None):
@@ -40,11 +47,38 @@ class KeyboardListener:
             return
 
         prompts = self.prompt_manager.get_prompts()
-        for shortcut, replacement in prompts.items():
+        for shortcut, prompt_data in prompts.items():
             if self.buffer.endswith(shortcut):
+                # Handle both old format (string) and new format (object)
+                if isinstance(prompt_data, dict):
+                    text = prompt_data.get('text', '')
+                    prepend = prompt_data.get('prepend', '')
+                    postpend = prompt_data.get('postpend', '')
+                    replacement = prepend + text + postpend
+                else:
+                    # Old format - just use the string
+                    replacement = prompt_data
+                
+                # Track usage (non-blocking)
+                self.track_usage(shortcut)
+                
                 self.replace_text(shortcut, replacement)
                 self.buffer = "" # Reset buffer after replacement
                 break
+    
+    def track_usage(self, shortcut):
+        """Track prompt usage by calling the API endpoint"""
+        if not HAS_URLLIB:
+            return
+        try:
+            data = json.dumps({'shortcut': shortcut}).encode('utf-8')
+            req = Request('http://localhost:5000/api/prompts/track-usage', 
+                         data=data,
+                         headers={'Content-Type': 'application/json'})
+            urlopen(req, timeout=0.1)
+        except:
+            # Silently fail - this is non-critical
+            pass
 
     def handle_enhancement(self):
         if not self.gemini_client:
