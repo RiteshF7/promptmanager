@@ -4,8 +4,38 @@ from keyboard_listener import KeyboardListener
 from gemini_client import GeminiClient
 import threading
 import os
+import sys
 
-app = Flask(__name__)
+# Determine template and static folders
+# When installed from wheel, data files are in site-packages/promptmanager-1.0.0.data/data/
+base_dir = os.path.dirname(os.path.abspath(__file__))
+template_dir = os.path.join(base_dir, 'templates')
+static_dir = os.path.join(base_dir, 'static')
+
+# Check if running from installed package (wheel)
+try:
+    import pkg_resources
+    # Try to find data directory from installed package
+    dist = pkg_resources.get_distribution('promptmanager')
+    if dist:
+        # Get the data directory from the installed package
+        data_dir = os.path.join(dist.location, 'promptmanager-1.0.0.data', 'data')
+        installed_template_dir = os.path.join(data_dir, 'templates')
+        installed_static_dir = os.path.join(data_dir, 'static')
+        if os.path.exists(installed_template_dir):
+            template_dir = installed_template_dir
+            static_dir = installed_static_dir
+except:
+    # Running from development - use default paths
+    pass
+
+# Create Flask app with appropriate template/static folders
+if os.path.exists(template_dir) and os.path.exists(static_dir):
+    app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+else:
+    # Fallback to default Flask behavior (looks in templates/ and static/ relative to app.py)
+    app = Flask(__name__)
+
 prompt_manager = PromptManager()
 gemini_client = GeminiClient()
 listener = KeyboardListener(prompt_manager, gemini_client)
@@ -91,6 +121,10 @@ def track_usage():
     except Exception as e:
         return jsonify({"status": "error", "message": f"Failed to track usage: {str(e)}"}), 500
 
-if __name__ == '__main__':
+def main():
+    """Entry point for the application"""
     app.run(debug=True, port=5000, use_reloader=False) 
     # use_reloader=False is important to avoid starting two listeners
+
+if __name__ == '__main__':
+    main()

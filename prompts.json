@@ -1,12 +1,12 @@
 {
-    "rundroidrun": {
-        "text": "@installdroidrun.sh  and then push it to github then access termux via adb cli and do a git pull and run the updated script dont stop until droidrun is installed via this script  critical: the installation must be done through this script for fututr automation purpose. in case of error explain it to me wait for my suggestion for fix then make the fix in code in cursor and repeat the process",
-        "prepend": "",
-        "postpend": "!!"
-    },
     "gitcommit": {
         "text": "Make a git add and commit with relevent message",
         "prepend": "!!",
         "postpend": ""
+    },
+    "rundroidrun": {
+        "text": "@installdroidrun.sh  and then push it to github then access termux via adb cli and do a git pull and run the updated script dont stop until droidrun is installed via this script  critical: the installation must be done through this script for fututr automation purpose. in case of error explain it to me wait for my suggestion for fix then make the fix in code in cursor and repeat the process",
+        "prepend": "",
+        "postpend": "!!"
     }
 }
