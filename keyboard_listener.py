@@ -48,21 +48,25 @@ class KeyboardListener:
 
         prompts = self.prompt_manager.get_prompts()
         for shortcut, prompt_data in prompts.items():
-            if self.buffer.endswith(shortcut):
-                # Handle both old format (string) and new format (object)
-                if isinstance(prompt_data, dict):
-                    text = prompt_data.get('text', '')
-                    prepend = prompt_data.get('prepend', '')
-                    postpend = prompt_data.get('postpend', '')
-                    replacement = prepend + text + postpend
-                else:
-                    # Old format - just use the string
-                    replacement = prompt_data
-                
+            # Handle both old format (string) and new format (object)
+            if isinstance(prompt_data, dict):
+                prepend = prompt_data.get('prepend', '')
+                postpend = prompt_data.get('postpend', '')
+                # Build the full trigger shortcut: prepend + shortcut + postpend
+                full_trigger = prepend + shortcut + postpend
+                text = prompt_data.get('text', '')
+                replacement = text  # Replacement is just the text, not prepend/postpend
+            else:
+                # Old format - just use the shortcut as-is
+                full_trigger = shortcut
+                replacement = prompt_data
+            
+            # Check if buffer ends with the full trigger shortcut
+            if self.buffer.endswith(full_trigger):
                 # Track usage (non-blocking)
                 self.track_usage(shortcut)
                 
-                self.replace_text(shortcut, replacement)
+                self.replace_text(full_trigger, replacement)
                 self.buffer = "" # Reset buffer after replacement
                 break
     

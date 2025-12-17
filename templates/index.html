@@ -123,11 +123,20 @@
                 recent.forEach(shortcut => {
                     if (shortcut in prompts) {
                         const promptData = prompts[shortcut];
-                        const text = typeof promptData === 'string' ? promptData : (promptData.text || '');
+                        let text, prepend = '', postpend = '';
+                        if (typeof promptData === 'string') {
+                            text = promptData;
+                        } else {
+                            text = promptData.text || '';
+                            prepend = promptData.prepend || '';
+                            postpend = promptData.postpend || '';
+                        }
+                        // Build the full trigger shortcut: prepend + shortcut + postpend
+                        const fullTrigger = prepend + shortcut + postpend;
                         const item = document.createElement('div');
                         item.className = 'recent-prompt-item';
                         item.innerHTML = `
-                            <span class="recent-shortcut">${shortcut}</span>
+                            <span class="recent-shortcut">${fullTrigger}</span>
                             <span class="recent-text">${text.substring(0, 30)}${text.length > 30 ? '...' : ''}</span>
                         `;
                         sidebarList.appendChild(item);
@@ -153,20 +162,21 @@
                             prepend = promptData.prepend || '';
                             postpend = promptData.postpend || '';
                         }
-                        const fullExpansion = prepend + text + postpend;
+                        // Build the full trigger shortcut: prepend + shortcut + postpend
+                        const fullTrigger = prepend + shortcut + postpend;
                         
                         const card = document.createElement('div');
                         card.className = 'prompt-card';
-                        const htmlShortcut = shortcut.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const htmlFullTrigger = fullTrigger.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const htmlText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         
                         card.innerHTML = `
                             <div class="prompt-info">
-                                <span class="shortcut-badge">${htmlShortcut}</span>
+                                <span class="shortcut-badge">${htmlFullTrigger}</span>
                                 <p class="prompt-text">${htmlText}</p>
                             </div>
                             <div class="prompt-actions">
-                                <button class="btn-icon btn-copy" data-text="${fullExpansion.replace(/"/g, '&quot;')}" data-shortcut="${shortcut.replace(/"/g, '&quot;')}" aria-label="Copy text">
+                                <button class="btn-icon btn-copy" data-text="${text.replace(/"/g, '&quot;')}" data-shortcut="${shortcut.replace(/"/g, '&quot;')}" aria-label="Copy text">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>

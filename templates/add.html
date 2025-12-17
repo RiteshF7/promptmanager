@@ -75,9 +75,9 @@
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div class="input-group">
-                                <label for="prepend">Prepend Text (Optional)</label>
-                                <input type="text" id="prepend" placeholder="e.g., Hello ">
-                                <p class="help-text">Text to add before expansion</p>
+                                <label for="prepend">Prepend to Shortcut (Optional)</label>
+                                <input type="text" id="prepend" placeholder="e.g., !!">
+                                <p class="help-text">Characters to add before shortcut trigger (e.g., !!hello)</p>
                                 <div class="quick-chars" data-target="prepend">
                                     <span class="quick-chars-label">Quick select:</span>
                                     <div class="quick-chars-buttons">
@@ -103,9 +103,9 @@
                                 </div>
                             </div>
                             <div class="input-group">
-                                <label for="postpend">Postpend Text (Optional)</label>
+                                <label for="postpend">Postpend to Shortcut (Optional)</label>
                                 <input type="text" id="postpend" placeholder="e.g., !">
-                                <p class="help-text">Text to add after expansion</p>
+                                <p class="help-text">Characters to add after shortcut trigger (e.g., hello!)</p>
                                 <div class="quick-chars" data-target="postpend">
                                     <span class="quick-chars-label">Quick select:</span>
                                     <div class="quick-chars-buttons">
@@ -195,11 +195,20 @@
                 recent.forEach(shortcut => {
                     if (shortcut in prompts) {
                         const promptData = prompts[shortcut];
-                        const text = typeof promptData === 'string' ? promptData : (promptData.text || '');
+                        let text, prepend = '', postpend = '';
+                        if (typeof promptData === 'string') {
+                            text = promptData;
+                        } else {
+                            text = promptData.text || '';
+                            prepend = promptData.prepend || '';
+                            postpend = promptData.postpend || '';
+                        }
+                        // Build the full trigger shortcut: prepend + shortcut + postpend
+                        const fullTrigger = prepend + shortcut + postpend;
                         const item = document.createElement('div');
                         item.className = 'recent-prompt-item';
                         item.innerHTML = `
-                            <span class="recent-shortcut">${shortcut}</span>
+                            <span class="recent-shortcut">${fullTrigger}</span>
                             <span class="recent-text">${text.substring(0, 30)}${text.length > 30 ? '...' : ''}</span>
                         `;
                         sidebarList.appendChild(item);
