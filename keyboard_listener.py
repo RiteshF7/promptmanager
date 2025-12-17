@@ -66,8 +66,10 @@ class KeyboardListener:
                 # Track usage (non-blocking)
                 self.track_usage(shortcut)
                 
+                # Clear buffer BEFORE replacement to ensure clean state
+                self.buffer = ""
+                # Replace the full trigger with only the text (no prepend/postpend)
                 self.replace_text(full_trigger, replacement)
-                self.buffer = "" # Reset buffer after replacement
                 break
     
     def track_usage(self, shortcut):
@@ -122,8 +124,11 @@ class KeyboardListener:
             self.controller.release(Key.backspace)
             time.sleep(0.01)
 
-    def replace_text(self, shortcut, replacement):
-        self.delete_text(shortcut)
+    def replace_text(self, text_to_delete, replacement):
+        # Delete the full trigger (prepend + shortcut + postpend)
+        # Make sure we delete exactly what was typed, nothing more, nothing less
+        self.delete_text(text_to_delete)
+        # Insert only the replacement text (no prepend/postpend)
         # Strip trailing newlines/whitespace to prevent auto-enter
         self.controller.type(replacement.rstrip())
 
