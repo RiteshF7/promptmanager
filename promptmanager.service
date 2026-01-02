@@ -1,0 +1,15 @@
+[Unit]
+Description=Prompt Manager Service
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/home/trex/code/promptmanager
+ExecStart=/home/trex/code/promptmanager/start_server.sh
+PIDFile=/home/trex/code/promptmanager/app.pid
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+
