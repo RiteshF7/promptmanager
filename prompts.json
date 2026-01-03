@@ -13,5 +13,25 @@
         "text": "dont use params like --tail or 2>1& or >app.log etc. just show the logs in the terminal",
         "prepend": "!!",
         "postpend": ""
+    },
+    "!!runintermux": {
+        "text": "in the currently running emulator use the adb shell and run-as com.termux to communicate from cli of this device make sure to export paths which is needed for running termux command",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!sendtotermux": {
+        "text": "adb push /home/trex/code/droidrundepedency/ /sdcard/wheels",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!sdk": {
+        "text": "here is the correct sdk path /media/trex/92e387d0-6ebf-4985-9602-95ad507642c3/home/trex/Android/Sdk",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!termuxexport": {
+        "text": "# Termux prefix (installation root)\nexport PREFIX=/data/data/com.termux/files/usr\n\n# Home directory for Termux\nexport HOME=/data/data/com.termux/files/home\n\n# Add Termux binaries to PATH\nexport PATH=$PREFIX/bin:$PATH\n\n# Python and other libraries\nexport LD_LIBRARY_PATH=$PREFIX/lib\n\n# Locale (optional, avoids some Python/UTF-8 issues)\nexport LANG=en_US.UTF-8",
+        "prepend": "",
+        "postpend": ""
     }
 }
