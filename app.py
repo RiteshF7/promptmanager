@@ -121,6 +121,42 @@ def track_usage():
     except Exception as e:
         return jsonify({"status": "error", "message": f"Failed to track usage: {str(e)}"}), 500
 
+@app.route('/api/keyboard/status', methods=['GET'])
+def keyboard_status():
+    """Check keyboard listener status"""
+    try:
+        # Check if listener is running
+        is_running = False
+        if listener.running and listener.listener is not None:
+            try:
+                # pynput listener has a running property
+                is_running = getattr(listener.listener, 'running', False)
+            except:
+                # Fallback: if listener exists and running flag is True, assume it's running
+                is_running = listener.running
+        
+        # Detect session type
+        session_type = os.environ.get('XDG_SESSION_TYPE', 'unknown')
+        is_wayland = session_type == 'wayland'
+        
+        status = "running" if is_running else "stopped"
+        
+        return jsonify({
+            "status": status,
+            "running": is_running,
+            "session_type": session_type,
+            "is_wayland": is_wayland,
+            "message": "Keyboard listener is running" if is_running else "Keyboard listener is not running"
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "running": False,
+            "session_type": os.environ.get('XDG_SESSION_TYPE', 'unknown'),
+            "is_wayland": os.environ.get('XDG_SESSION_TYPE') == 'wayland',
+            "message": f"Error checking status: {str(e)}"
+        }), 500
+
 def main():
     """Entry point for the application"""
     app.run(debug=True, port=5000, use_reloader=False) 

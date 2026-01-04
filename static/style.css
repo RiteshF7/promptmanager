@@ -912,6 +912,95 @@ textarea {
     transform: scaleY(1);
 }
 
+/* Permissions Section */
+.permissions-section {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.permissions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.permissions-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    display: inline-block;
+}
+
+.status-dot-success {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.status-dot-warning {
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.status-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.permissions-info {
+    margin-top: 0.75rem;
+}
+
+.wayland-instructions {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+}
+
+.instruction-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.instruction-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.instruction-list li {
+    margin-bottom: 0.5rem;
+}
+
+.instruction-list strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     header h1 {

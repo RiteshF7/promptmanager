@@ -151,7 +151,30 @@
                 <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="input-group">
+                <!-- Keyboard Permissions Section -->
+                <div class="permissions-section">
+                    <div class="permissions-header">
+                        <h3>Keyboard Permissions</h3>
+                        <div id="keyboard-status" class="status-indicator">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Checking...</span>
+                        </div>
+                    </div>
+                    <div id="keyboard-status-info" class="permissions-info">
+                        <p class="help-text">Required for keyboard shortcuts to work. The permission dialog will appear automatically when needed.</p>
+                        <div id="wayland-instructions" class="wayland-instructions" style="display: none;">
+                            <p class="instruction-title">On Wayland, you need to grant permission:</p>
+                            <ol class="instruction-list">
+                                <li>When the permission dialog appears, click <strong>"Allow"</strong> or <strong>"Grant"</strong></li>
+                                <li>Alternatively, go to <strong>Settings → Privacy → Accessibility</strong></li>
+                                <li>Enable access for <strong>Python</strong> or <strong>Prompt Manager</strong></li>
+                            </ol>
+                        </div>
+                        <button id="refresh-keyboard-status" class="btn-secondary" style="margin-top: 0.5rem;">Refresh Status</button>
+                    </div>
+                </div>
+                
+                <div class="input-group" style="margin-top: 1.5rem;">
                     <label for="api-key">Gemini API Key</label>
                     <input type="password" id="api-key" placeholder="Enter your Gemini API Key">
                     <p class="help-text">Required for prompt enhancement feature (//enhance)</p>
@@ -288,6 +311,61 @@
                     showToast(data.message, 'error');
                 }
             };
+
+            // Keyboard status functions
+            async function checkKeyboardStatus() {
+                try {
+                    const response = await fetch('/api/keyboard/status');
+                    const data = await response.json();
+                    updateKeyboardStatusUI(data);
+                } catch (error) {
+                    console.error('Error checking keyboard status:', error);
+                    updateKeyboardStatusUI({
+                        status: 'error',
+                        running: false,
+                        is_wayland: false,
+                        message: 'Error checking status'
+                    });
+                }
+            }
+
+            function updateKeyboardStatusUI(data) {
+                const statusEl = document.getElementById('keyboard-status');
+                const statusDot = statusEl.querySelector('.status-dot');
+                const statusText = statusEl.querySelector('.status-text');
+                const waylandInstructions = document.getElementById('wayland-instructions');
+
+                if (data.running) {
+                    statusDot.className = 'status-dot status-dot-success';
+                    statusText.textContent = 'Active';
+                } else {
+                    statusDot.className = 'status-dot status-dot-warning';
+                    statusText.textContent = 'Inactive';
+                }
+
+                if (data.is_wayland && !data.running) {
+                    waylandInstructions.style.display = 'block';
+                } else {
+                    waylandInstructions.style.display = 'none';
+                }
+            }
+
+            // Check status when modal opens
+            if (settingsBtn) {
+                settingsBtn.onclick = () => {
+                    modal.style.display = "block";
+                    checkKeyboardStatus();
+                };
+            }
+
+            // Refresh button
+            const refreshBtn = document.getElementById('refresh-keyboard-status');
+            if (refreshBtn) {
+                refreshBtn.onclick = checkKeyboardStatus;
+            }
+
+            // Initial status check
+            checkKeyboardStatus();
         });
     </script>
 </body>
