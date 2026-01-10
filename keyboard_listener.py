@@ -3,6 +3,7 @@ from pynput.keyboard import Key, Controller
 import time
 import threading
 import json
+from loading_animation import LoadingAnimation
 try:
     from urllib.request import urlopen, Request
     from urllib.error import URLError
@@ -18,6 +19,7 @@ class KeyboardListener:
         self.controller = Controller()
         self.listener = None
         self.running = False
+        self.loading_animation = LoadingAnimation(self.controller)
 
     def on_press(self, key):
         try:
@@ -42,7 +44,7 @@ class KeyboardListener:
 
     def check_for_matches(self):
         # Check for enhancement trigger
-        if self.buffer.endswith("//enhance"):
+        if self.buffer.endswith("````"):
             self.handle_enhancement()
             return
 
@@ -90,33 +92,53 @@ class KeyboardListener:
         if not self.gemini_client:
             return
 
-        # Extract the text before //enhance
-        # We assume the user typed the prompt and then //enhance immediately
+        # Extract the text before ````
+        # We assume the user typed the prompt and then ```` immediately
         # We'll take the last 500 chars (minus the trigger) as context, 
         # but practically we want to find the start of the sentence or just take everything in buffer.
         # For simplicity, we'll take the whole buffer minus the trigger.
         
-        trigger = "//enhance"
+        trigger = "````"
         text_to_enhance = self.buffer[:-len(trigger)].strip()
         
         if not text_to_enhance:
             return
 
+        # Clear buffer to prevent further processing
+        self.buffer = ""
+        
         # Visual feedback: delete the trigger
         self.delete_text(trigger)
-        
-        # Show "Enhancing..." or similar? Hard to do without UI overlay.
-        # We'll just delete the text and type the new one.
-        
-        enhanced_text = self.gemini_client.enhance_prompt(text_to_enhance)
         
         # Delete the original text
         self.delete_text(text_to_enhance)
         
-        # Type the enhanced text, replacing newlines with spaces to prevent auto-sending
-        self.controller.type(enhanced_text.replace('\n', ' '))
+        # Start the animated loading indicator
+        self.loading_animation.start()
         
-        self.buffer = "" # Reset buffer
+        # Run enhancement in a separate thread to avoid blocking
+        def enhance_and_replace():
+            try:
+                # Get the enhanced text
+                enhanced_text = self.gemini_client.enhance_prompt(text_to_enhance)
+                
+                # Stop animation
+                self.loading_animation.stop()
+                
+                # Type the enhanced text, replacing newlines with spaces to prevent auto-sending
+                self.controller.type(enhanced_text.replace('\n', ' '))
+            except Exception as e:
+                # Stop animation on error
+                self.loading_animation.stop()
+                
+                # Show error message
+                error_msg = f"Error: {str(e)}"
+                self.controller.type(error_msg)
+        
+        # Start the enhancement in a separate thread
+        thread = threading.Thread(target=enhance_and_replace)
+        thread.daemon = True
+        thread.start()
 
     def delete_text(self, text):
         for _ in range(len(text)):

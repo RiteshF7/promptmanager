@@ -5,6 +5,10 @@ from gemini_client import GeminiClient
 import threading
 import os
 import sys
+from dotenv import load_dotenv
+
+# Load .env file at startup
+load_dotenv()
 
 # Determine template and static folders
 # When installed from wheel, data files are in site-packages/promptmanager-1.0.0.data/data/
@@ -58,7 +62,10 @@ def landing():
 
 @app.route('/api/settings', methods=['GET'])
 def get_settings():
-    return jsonify({"api_key": os.getenv("GEMINI_API_KEY", "")})
+    # Always reload from .env file to get the latest value
+    load_dotenv(override=True)  # override=True ensures we read fresh from .env
+    api_key = os.getenv("GEMINI_API_KEY", "")
+    return jsonify({"api_key": api_key})
 
 @app.route('/api/settings', methods=['POST'])
 def save_settings():

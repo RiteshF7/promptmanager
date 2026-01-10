@@ -1,12 +1,27 @@
 {
-    "rundroidrun": {
-        "text": "@installdroidrun.sh  and then push it to github then access termux via adb cli and do a git pull and run the updated script dont stop until droidrun is installed via this script  critical: the installation must be done through this script for fututr automation purpose. in case of error explain it to me wait for my suggestion for fix then make the fix in code in cursor and repeat the process",
+    "!!androidsdk": {
+        "text": "C:\\Users\\rites\\AppData\\Local\\Android\\Sdk",
         "prepend": "",
-        "postpend": "!!"
+        "postpend": ""
     },
-    "gitcommit": {
-        "text": "Make a git add and commit with relevent message",
-        "prepend": "!!",
+    "!!askme": {
+        "text": "before implementing and writing code ask me any questions or doubt you have related to this implementation.",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!cleancode": {
+        "text": "remove unused code extra code and make this code more maintainable and remove duplication of code make this code more clean",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!connectssh": {
+        "text": "# Short AI Prompt for Termux SSH Setup\n\n## Copy-Paste This Prompt\n\n```\nHelp me set up SSH in Termux and connect via ADB.\n\nRequirements:\n1. Use ADB to execute commands in Termux (package: com.termux)\n2. Detect username: adb shell \"run-as com.termux whoami\"\n3. Install openssh in Termux via ADB\n4. Set password (use: trex)\n5. Start SSH server on port 8022\n6. Setup ADB port forwarding: adb forward tcp:8022 tcp:8022\n7. Connect via SSH from computer\n\nTermux context:\n- Home: /data/data/com.termux/files/home\n- Prefix: /data/data/com.termux/files/usr/bin\n- Execute via: run-as com.termux sh -c 'export PATH=/data/data/com.termux/files/usr/bin:$PATH && [command]'\n\nProvide:\n- Automated bash script\n- Manual step-by-step commands\n- Quick connect script for future use\n\nAll commands should be copy-paste ready.\n```\n\n---\n\n## Even Shorter Version\n\n```\nCreate script to SSH into Termux via ADB:\n1. Detect username: adb shell \"run-as com.termux whoami\"\n2. Install openssh in Termux via ADB\n3. Set password: trex\n4. Start SSH server (port 8022)\n5. Port forward: adb forward tcp:8022 tcp:8022\n6. Connect: ssh -p 8022 [username]@127.0.0.1\n\nTermux execute: run-as com.termux sh -c 'export PATH=/data/data/com.termux/files/usr/bin:$PATH && [cmd]'\n\nProvide bash script + manual commands.\n```",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!installdroidrun": {
+        "text": "cd /e/Code/LunarLand/MiniLinux/droidrunBuild && adb shell \"run-as com.termux /data/data/com.termux/files/usr/bin/bash -c 'export PATH=/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets:\\$PATH && export PREFIX=/data/data/com.termux/files/usr && cd /data/data/com.termux/files/home/droidrundepedency && /data/data/com.termux/files/usr/bin/bash installdroidrun.sh'\"",
+        "prepend": "",
         "postpend": ""
     },
     "!!installintermux": {
@@ -14,8 +29,43 @@
         "prepend": "",
         "postpend": ""
     },
-    "!!installdroidrun": {
-        "text": "cd /e/Code/LunarLand/MiniLinux/droidrunBuild && adb shell \"run-as com.termux /data/data/com.termux/files/usr/bin/bash -c 'export PATH=/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets:\\$PATH && export PREFIX=/data/data/com.termux/files/usr && cd /data/data/com.termux/files/home/droidrundepedency && /data/data/com.termux/files/usr/bin/bash installdroidrun.sh'\"",
+    "!!installtermux": {
+        "text": "./gradlew :app:installDebug",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!make7z": {
+        "text": "7z a -t7z -mx=9 output.7z foldername",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!makezip": {
+        "text": "pkg install zip\n#zip -r newname.zip destfilefolder",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!runastermux": {
+        "text": "adb shell \"run-as com.termux sh -c 'cd /data/data/com.termux/files/home && export PATH=/data/data/com.termux/files/usr/bin:\\$PATH && export HOME=/data/data/com.termux/files/home && export PREFIX=/data/data/com.termux/files/usr && exec sh'\"",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!runintermux": {
+        "text": "run-as com.termux \ncd /data/data/com.termux/files/home \nexport PATH=/data/data/com.termux/files/usr/bin:\\$PATH\nexport HOME=/data/data/com.termux/files/home\nexport PREFIX=/data/data/com.termux/files/usr",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!showlogs": {
+        "text": "avoid useless params like tail and head and 2>&1 as it stops the live terminal terminal from the user view make sure i see all logs in ther terminal in whihc script is running",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!termuxexport": {
+        "text": "export PATH=/data/data/com.termux/files/usr/bin:\\$PATH && export HOME=/data/data/com.termux/files/home && export PREFIX=/data/data/com.termux/files/usr",
+        "prepend": "",
+        "postpend": ""
+    },
+    "!!uninstalltermux": {
+        "text": "adb uninstall com.termux",
         "prepend": "",
         "postpend": ""
     },
@@ -34,68 +84,18 @@
         "prepend": "",
         "postpend": ""
     },
-    "!!showlogs": {
-        "text": "avoid useless params like tail and head and 2>&1 as it stops the live terminal terminal from the user view make sure i see all logs in ther terminal in whihc script is running",
-        "prepend": "",
+    "gitcommit": {
+        "text": "Make a git add and commit with relevent message",
+        "prepend": "!!",
         "postpend": ""
     },
-    "!!connectssh": {
-        "text": "# Short AI Prompt for Termux SSH Setup\n\n## Copy-Paste This Prompt\n\n```\nHelp me set up SSH in Termux and connect via ADB.\n\nRequirements:\n1. Use ADB to execute commands in Termux (package: com.termux)\n2. Detect username: adb shell \"run-as com.termux whoami\"\n3. Install openssh in Termux via ADB\n4. Set password (use: trex)\n5. Start SSH server on port 8022\n6. Setup ADB port forwarding: adb forward tcp:8022 tcp:8022\n7. Connect via SSH from computer\n\nTermux context:\n- Home: /data/data/com.termux/files/home\n- Prefix: /data/data/com.termux/files/usr/bin\n- Execute via: run-as com.termux sh -c 'export PATH=/data/data/com.termux/files/usr/bin:$PATH && [command]'\n\nProvide:\n- Automated bash script\n- Manual step-by-step commands\n- Quick connect script for future use\n\nAll commands should be copy-paste ready.\n```\n\n---\n\n## Even Shorter Version\n\n```\nCreate script to SSH into Termux via ADB:\n1. Detect username: adb shell \"run-as com.termux whoami\"\n2. Install openssh in Termux via ADB\n3. Set password: trex\n4. Start SSH server (port 8022)\n5. Port forward: adb forward tcp:8022 tcp:8022\n6. Connect: ssh -p 8022 [username]@127.0.0.1\n\nTermux execute: run-as com.termux sh -c 'export PATH=/data/data/com.termux/files/usr/bin:$PATH && [cmd]'\n\nProvide bash script + manual commands.\n```",
+    "rundroidrun": {
+        "text": "@installdroidrun.sh  and then push it to github then access termux via adb cli and do a git pull and run the updated script dont stop until droidrun is installed via this script  critical: the installation must be done through this script for fututr automation purpose. in case of error explain it to me wait for my suggestion for fix then make the fix in code in cursor and repeat the process",
         "prepend": "",
-        "postpend": ""
-    },
-    "!!runastermux": {
-        "text": "adb shell \"run-as com.termux sh -c 'cd /data/data/com.termux/files/home && export PATH=/data/data/com.termux/files/usr/bin:\\$PATH && export HOME=/data/data/com.termux/files/home && export PREFIX=/data/data/com.termux/files/usr && exec sh'\"",
-        "prepend": "",
-        "postpend": ""
+        "postpend": "!!"
     },
     "startemulatorone``": {
         "text": "start emulator -avd DroidRunner",
-        "prepend": "",
-        "postpend": ""
-    },
-    "!!runintermux": {
-        "text": "run-as com.termux \ncd /data/data/com.termux/files/home \nexport PATH=/data/data/com.termux/files/usr/bin:\\$PATH\nexport HOME=/data/data/com.termux/files/home\nexport PREFIX=/data/data/com.termux/files/usr",
-        "prepend": "",
-        "postpend": ""
-    },
-    "!!make7z": {
-        "text": "7z a -t7z -mx=9 output.7z foldername",
-        "prepend": "",
-        "postpend": ""
-    },
-    "!!makezip": {
-        "text": "pkg install zip\n#zip -r newname.zip destfilefolder",
-        "prepend": "",
-        "postpend": ""
-    },
-    "!!askme": {
-        "text": "before implementing and writing code ask me any questions or doubt you have related to this implementation.",
-        "prepend": "",
-        "postpend": ""
-    },
-    "!!termuxexport": {
-        "text": "export PATH=/data/data/com.termux/files/usr/bin:\\$PATH && export HOME=/data/data/com.termux/files/home && export PREFIX=/data/data/com.termux/files/usr",
-        "prepend": "",
-        "postpend": ""
-    },
-    "!!androidsdk": {
-        "text": "C:\\Users\\rites\\AppData\\Local\\Android\\Sdk",
-        "prepend": "",
-        "postpend": ""
-    },
-    "!!uninstalltermux": {
-        "text": "adb uninstall com.termux",
-        "prepend": "",
-        "postpend": ""
-    },
-    "!!installtermux": {
-        "text": "./gradlew :app:installDebug",
-        "prepend": "",
-        "postpend": ""
-    },
-    "!!cleancode": {
-        "text": "remove unused code extra code and make this code more maintainable and remove duplication of code make this code more clean",
         "prepend": "",
         "postpend": ""
     }
